@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Kafka Replication - 潇慕雨Muyoo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="上一篇文章简单记录了Kafka的基本工作框架、数据结构、Producer和Consumer。现在继续啃Kafka的官方文档，主要记录下Kafka中的复制集。（Kafka版本 0.8.2.1）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka Replication">
+<meta property="og:url" content="http://www.xmuyoo.com/2015/10/16/KafkaReplication/index.html">
+<meta property="og:site_name" content="潇慕雨Muyoo">
+<meta property="og:description" content="上一篇文章简单记录了Kafka的基本工作框架、数据结构、Producer和Consumer。现在继续啃Kafka的官方文档，主要记录下Kafka中的复制集。（Kafka版本 0.8.2.1）">
+<meta property="og:image" content="http://7vzs9m.com1.z0.glb.clouddn.com/冰滴4.jpg">
+<meta property="og:updated_time" content="2015-10-16T08:23:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kafka Replication">
+<meta name="twitter:description" content="上一篇文章简单记录了Kafka的基本工作框架、数据结构、Producer和Consumer。现在继续啃Kafka的官方文档，主要记录下Kafka中的复制集。（Kafka版本 0.8.2.1）">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+  <link href="/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '[object Object]', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+</head>
+
+<body>
+  <div id="container">
+    <header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
+      <a id="logo" class="logo" href="/"></a>
+      <nav id="main-nav">
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about/index.html">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        <div id="search-form-wrap">
+          <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://www.xmuyoo.com"></form>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+    <section id="main" class="outer"><article id="post-KafkaReplication" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Kafka Replication
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2015/10/16/KafkaReplication/" class="article-date">
+  <time datetime="2015-10-16T08:23:44.000Z" itemprop="datePublished">2015-10-16</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/技术/">技术</a><span>></span><a class="article-category-link" href="/categories/技术/Kafka/">Kafka</a>
+  </div>
+
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://7vzs9m.com1.z0.glb.clouddn.com/冰滴4.jpg" alt=" 还是比较喜欢水果风味较亮的咖啡，中培的曼特宁喝起来竟会联想到原始森林T.T - By Muyoo"></p>
+<p>上一篇文章简单记录了Kafka的基本工作框架、数据结构、Producer和Consumer。现在继续啃Kafka的官方文档，主要记录下Kafka中的复制集。<br>（Kafka版本 0.8.2.1）<br><a id="more"></a></p>
+<h3 id="Replication的结构">Replication的结构</h3><p>Kafka中通过配置项来指定topic中partition的replication数量。（通常replication面临的问题：通常slave节点的使用率不高，数据间的传输备份会与提升吞吐量造成冲突；同时需要配置的项目也是比较繁琐。）<br>Kafka备份的数据单元是partition，每个partition有一个leader和若干follower。replica的总数取决于所有broker的数量（包括leader）。broker作为工作单元（服务器），一个partition可以有多个broker，反之一个broker下也有多个partition（partition可能是不同topic的）。通常情况下，partition的数量比broker多，而leader也是在这些broker中选出。</p>
+<h3 id="同步数据">同步数据</h3><p>follower同步从leader同步数据的方式与正常的Consumer相同，从leader读取数据然后存入自己的log队列。一条新的数据进入后，在所有“in sync”的replica成功将其放入自己的队列后，这条数据才能被正常的Consumer读取。这个过程在Kafka中被称为“committed”。<br>而“in sync”是指，leader会维护一个满足以下两个条件的replica节点集合：</p>
+<ul>
+<li>节点必须能与zookeeper保持正常通信</li>
+<li>它必须保证从leader同步的数据不能掉队太多<br>当如果有follower发生异常“dies”、“gets stuck”、“falls behind”时，leader会将其从“in sync”的集合中去掉。（关于“get stuck”的定义配置通过replica.lag.time.max.ms控制，关于“falls behind”的定义配置通过replica.lag.max.messages控制。）</li>
+</ul>
+
+      
+    </div>
+    
+    
+      <footer class="article-footer">
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kafka/">Kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Messaging-System/">Messaging System</a></li></ul>
+
+      </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/10/20/KafkaMirror/" id="article-nav-newer" class="article-nav-link-wrap">
+      <div class="article-nav-title"><span>&lt;</span>&nbsp;
+        
+          Kafka 水平扩展、集群镜像
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/10/14/KafkaNote/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Kafka 基本概念&nbsp;<span>&gt;</span></div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Muyoo&nbsp;
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, theme by <a href="http://github.com/ppoffice">PPOffice</a>
+    </div>
+  </div>
+</footer>
+    
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+  </div>
+</body>
+</html>

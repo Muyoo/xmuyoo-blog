@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Kafka 配置项 - 潇慕雨Muyoo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Kafka 部分配置项本文只记录一些目前使用Kafka可能会比较有用的配置项。关于单个broker的，和关于topic-level的。其中有些配置项可以是topic级别的。Kafka的版本是0.8.2.1。
+
+log.flush.interval：默认500，数据积累的量，超过这个量就将数据写到磁盘
+log.default.flush.interval.ms：数据写到磁盘的间隔时间，毫秒。默认与l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka 配置项">
+<meta property="og:url" content="http://www.xmuyoo.com/2015/10/22/KafkaConfig/index.html">
+<meta property="og:site_name" content="潇慕雨Muyoo">
+<meta property="og:description" content="Kafka 部分配置项本文只记录一些目前使用Kafka可能会比较有用的配置项。关于单个broker的，和关于topic-level的。其中有些配置项可以是topic级别的。Kafka的版本是0.8.2.1。
+
+log.flush.interval：默认500，数据积累的量，超过这个量就将数据写到磁盘
+log.default.flush.interval.ms：数据写到磁盘的间隔时间，毫秒。默认与l">
+<meta property="og:image" content="http://7vzs9m.com1.z0.glb.clouddn.com/照片133.jpg">
+<meta property="og:updated_time" content="2015-10-22T09:26:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kafka 配置项">
+<meta name="twitter:description" content="Kafka 部分配置项本文只记录一些目前使用Kafka可能会比较有用的配置项。关于单个broker的，和关于topic-level的。其中有些配置项可以是topic级别的。Kafka的版本是0.8.2.1。
+
+log.flush.interval：默认500，数据积累的量，超过这个量就将数据写到磁盘
+log.default.flush.interval.ms：数据写到磁盘的间隔时间，毫秒。默认与l">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+  <link href="/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '[object Object]', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+</head>
+
+<body>
+  <div id="container">
+    <header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
+      <a id="logo" class="logo" href="/"></a>
+      <nav id="main-nav">
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about/index.html">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        <div id="search-form-wrap">
+          <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://www.xmuyoo.com"></form>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+    <section id="main" class="outer"><article id="post-KafkaConfig" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Kafka 配置项
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2015/10/22/KafkaConfig/" class="article-date">
+  <time datetime="2015-10-22T09:26:25.000Z" itemprop="datePublished">2015-10-22</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/技术/">技术</a><span>></span><a class="article-category-link" href="/categories/技术/Kafka/">Kafka</a>
+  </div>
+
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://7vzs9m.com1.z0.glb.clouddn.com/照片133.jpg" alt="世界尽头的晨曦让我这么怀念 在冰岛北部，几乎走到哪里都可以见到这座美丽的火山 - By Muyoo"></p>
+<h3 id="Kafka_部分配置项">Kafka 部分配置项</h3><p>本文只记录一些目前使用Kafka可能会比较有用的配置项。关于单个broker的，和关于topic-level的。其中有些配置项可以是topic级别的。<br>Kafka的版本是0.8.2.1。</p>
+<ul>
+<li>log.flush.interval：默认500，数据积累的量，超过这个量就将数据写到磁盘</li>
+<li>log.default.flush.interval.ms：数据写到磁盘的间隔时间，毫秒。默认与log.default.flush.scheduler.interval.ms相同，3000。</li>
+<li>log.retention.hours：数据保留的时间，小时。默认168</li>
+<li>log.segment.bytes：数据文件大小，默认是1024<em>1024</em>1024</li>
+<li>log.roll.{ms,hours}：数据文件切分的时间间隔，与大小限制同时起作用的，默认是24*7小时</li>
+<li>log.cleanup.policy：处理切分后数据的方式，delete或者compact。如果是delete，被切分出来的数据会被删除；如果是compact，切分出的数据会被压缩用于淘汰过期的数据。</li>
+<li>log.cleaner.min.cleanable.ratio：</li>
+<li>min.insync.replicas：</li>
+<li>log.roll.jitter.{ms,hours}：</li>
+</ul>
+<h4 id="Topic-Level">Topic-Level</h4><ul>
+<li>topic.flush.intervals.ms：覆盖log.default.flush.interval.ms。</li>
+<li>topic.log.retention.hours：覆盖log.retention.hours</li>
+<li>topic.partition.count.map：覆盖创建topic时指定的partition数量。</li>
+<li>topic.log.segment.bytes：覆盖log.segment.bytes</li>
+<li>topic.log.roll.{ms,hours}：覆盖log.roll.{ms,hours}</li>
+<li>topic.log.cleanup.policy：覆盖log.cleanup.policy</li>
+<li>min.cleanable.dirty.ratio：覆盖log.cleaner.min.cleanable.ratio</li>
+<li>min.insync.replicas：覆盖min.insync.replicas</li>
+<li>segment.jitter.ms：覆盖log.roll.jitter.{ms,hours}</li>
+</ul>
+<p>官方的topic level配置项：<a href="http://kafka.apache.org/documentation.html#topic-config" target="_blank" rel="external">topic level</a></p>
+
+      
+    </div>
+    
+    
+      <footer class="article-footer">
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Config/">Config</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kafka/">Kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Messaging-System/">Messaging System</a></li></ul>
+
+      </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/12/15/StreamDataCentral/" id="article-nav-newer" class="article-nav-link-wrap">
+      <div class="article-nav-title"><span>&lt;</span>&nbsp;
+        
+          流数据平台阅读笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/10/20/KafkaMirror/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Kafka 水平扩展、集群镜像&nbsp;<span>&gt;</span></div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Muyoo&nbsp;
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, theme by <a href="http://github.com/ppoffice">PPOffice</a>
+    </div>
+  </div>
+</footer>
+    
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+  </div>
+</body>
+</html>

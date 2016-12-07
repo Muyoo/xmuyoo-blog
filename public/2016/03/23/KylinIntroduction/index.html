@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Kylin Learning Note —— What? (Kylin, Cube) - 潇慕雨Muyoo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="What is Kylin?Kylin is an OLAP system developed by the data team of eBay China.
+Fast is the biggest selling point. It offers second level latency for query over 10 billions rows data. According to the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kylin Learning Note —— What? (Kylin, Cube)">
+<meta property="og:url" content="http://www.xmuyoo.com/2016/03/23/KylinIntroduction/index.html">
+<meta property="og:site_name" content="潇慕雨Muyoo">
+<meta property="og:description" content="What is Kylin?Kylin is an OLAP system developed by the data team of eBay China.
+Fast is the biggest selling point. It offers second level latency for query over 10 billions rows data. According to the">
+<meta property="og:image" content="http://7vzs9m.com1.z0.glb.clouddn.com/2015-03-21%20164026.jpg">
+<meta property="og:updated_time" content="2016-03-23T03:28:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kylin Learning Note —— What? (Kylin, Cube)">
+<meta name="twitter:description" content="What is Kylin?Kylin is an OLAP system developed by the data team of eBay China.
+Fast is the biggest selling point. It offers second level latency for query over 10 billions rows data. According to the">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="/webfonts/ptserif/main.css" rel='stylesheet' type='text/css'>
+  <link href="/webfonts/source-code-pro/main.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '[object Object]', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+</head>
+
+<body>
+  <div id="container">
+    <header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-inner" class="inner">
+      <a id="main-nav-toggle" class="nav-icon" href="javascript:;"></a>
+      <a id="logo" class="logo" href="/"></a>
+      <nav id="main-nav">
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about/index.html">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        <div id="search-form-wrap">
+          <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://www.xmuyoo.com"></form>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+    <section id="main" class="outer"><article id="post-KylinIntroduction" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Kylin Learning Note —— What? (Kylin, Cube)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      <a href="/2016/03/23/KylinIntroduction/" class="article-date">
+  <time datetime="2016-03-23T03:28:15.000Z" itemprop="datePublished">2016-03-23</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/技术/">技术</a><span>></span><a class="article-category-link" href="/categories/技术/Kylin/">Kylin</a>
+  </div>
+
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://7vzs9m.com1.z0.glb.clouddn.com/2015-03-21%20164026.jpg" alt="阳光下的星星 - By Muyoo"></p>
+<h2 id="What_is_Kylin?">What is Kylin?</h2><p><a href="http://kylin.apache.org" target="_blank" rel="external">Kylin</a> is an <a href="https://en.wikipedia.org/wiki/Online_analytical_processing" target="_blank" rel="external">OLAP</a> system developed by the data team of eBay China.</p>
+<p>Fast is the biggest selling point. It offers second level latency for query over 10 billions rows data. According to the official words, it can let you query big table in Hive at sub-second latency. Sounds cool, right?<br><a id="more"></a></p>
+<p>Another important key point is its idea of processing data, that is pre-processing the big data. What does it mean? Kylin will create some data segments which contain middle level results before we querying. Therefore, Kylin uses extra disk spaces to exchange the low latency performance.<br>Kylin depends on:</p>
+<ul>
+<li>Hadoop Yarn</li>
+<li>HBase</li>
+<li>Hive</li>
+<li>Zookeeper</li>
+</ul>
+<p>the versions above are according to the Kylin’s version. It can be found on the doc pages of Kylin.</p>
+<p>The third point is that Kylin is used for low latency statistic, not searching. If you want to search something like some users’ details, unfortunately, in my opinion, Kylin may not be your best choice.</p>
+<h2 id="Data_Model_of_Kylin">Data Model of Kylin</h2><p>The most important key word is <code>Cube</code>. As you use Kylin, you will create a cube, build a cube, run cube jobs, merge cubes and so on. So, what is a cube? </p>
+<p>Before answering this question, let’s see how to make a cube ready. To do this, we will do 4 steps:</p>
+<ul>
+<li>Load Hive tables into Kylin we need</li>
+<li>Create a data model</li>
+<li>Design the Cube</li>
+<li>Build cube</li>
+</ul>
+<p>I’m not going to talk about the details about these steps. If you want to know more about them, you can find them in my another article. </p>
+<p>After we loading the hive tables into Kylin, we need to create a data model first. A data model is a description about what hive tables, dimensions (such as columns used for group by), measures (such as columns used for statistic) we need. It is not a real data block.<br>And then we need to create a cube description. It contains what dimensions we need, same as the model; and what measures we need, the difference from the model is that we design which statistic function we use here; and the time range. It is also not a data block yet, but it is called <code>cube_desc</code> and stored in HBase.<br>At last we build a cube according to the information created above two. At this step, it creates the real data segments on HDFS stored in HBase. So, in a view, we can say that the model and the cube are logical definitions and the data segment is a physical definition. A cube is consists of numbers of segments.</p>
+<h2 id="References">References</h2><ul>
+<li><a href="http://kylin.apache.org" target="_blank" rel="external">Kylin Home Page</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Online_analytical_processing" target="_blank" rel="external">OLAP Wikipedia</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+      <footer class="article-footer">
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cube/">Cube</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Data-Model/">Data Model</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kylin/">Kylin</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OLAP/">OLAP</a></li></ul>
+
+      </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/12/04/SomethingAboutThreadSafeInJava/" id="article-nav-newer" class="article-nav-link-wrap">
+      <div class="article-nav-title"><span>&lt;</span>&nbsp;
+        
+          Java中Synchronized、Volatile、Atomic的一些事
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/02/04/Summary2015/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">2015 我的总结&nbsp;<span>&gt;</span></div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Muyoo&nbsp;
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, theme by <a href="http://github.com/ppoffice">PPOffice</a>
+    </div>
+  </div>
+</footer>
+    
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+  </div>
+</body>
+</html>
